@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static%}
+{% block content %}
+<main class="form-auth form-signin w-100 m-auto">
+    <form method="post">
+        {% csrf_token %}
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+        {% for field in form %}
+        <div class="form-floating">
+            {{ field }}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        </div>
+        {% endfor %}
+
+        <div class="my-3">
+            <p>Have no account?</p>
+            <a href="{% url "signup" %}" class="text-body fw-bold">Sign up now</a>
+        </div>
+
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign In</button>
+    </form>
+</main>
+{% endblock content %}
