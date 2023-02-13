@@ -1,5 +1,5 @@
 """
-Module for registration models
+Module for registration users models
 """
 
 from django.contrib import admin
