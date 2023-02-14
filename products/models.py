@@ -8,18 +8,18 @@ from django.conf import settings
 
 class ProductModel(models.Model):
     name = models.CharField(max_length=60)
-    description = models.TextField(help_text="Расскажите о товаре")
+    description = models.TextField(help_text="Product description")
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity = models.PositiveIntegerField(default=0, help_text="Количество на складе")
+    quantity = models.PositiveIntegerField(default=0, help_text="Stock quantity of a product")
 
     def __str__(self):
         return self.name
 
     class Meta:
-        db_table = "Products"
+        db_table = "Product"
         ordering = ["name"]
-        verbose_name = "Товар"
-        verbose_name_plural = "Товари"
+        verbose_name = "Product"
+        verbose_name_plural = "Products"
 
 
 class PurchaseModel(models.Model):
@@ -32,9 +32,9 @@ class PurchaseModel(models.Model):
         return str(self.product)
 
     class Meta:
-        db_table = "Purchases"
-        verbose_name = "Покупка"
-        verbose_name_plural = "Покупки"
+        db_table = "Purchase"
+        verbose_name = "Purchase"
+        verbose_name_plural = "Purchases"
 
 
 class ReturnPurchaseModel(models.Model):
@@ -45,6 +45,6 @@ class ReturnPurchaseModel(models.Model):
         return str(self.product)
 
     class Meta:
-        db_table = "Returns"
-        verbose_name = "Повернення покупки"
-        verbose_name_plural = "Повернення покупок"
+        db_table = "Return"
+        verbose_name = "Purchase return"
+        verbose_name_plural = "Purchases return"
