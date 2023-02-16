@@ -11,10 +11,10 @@
         {% if user.is_staff%}
             <p><a href="{% url 'edit_product' product.id %}" class="btn btn-warning">Edit</a></p>
         {% else %}
-            <form action="" method="post">
+            <form method="post">
                 {% csrf_token %}
                     <label>Amount:</label>
-                    <input type="number" name="amount" value="0">
+                    <input type="number" name="amount" value="0" min="1" required>
                     <input type="hidden" name="product_id" value="{{ product.id }}">
                     <input type="hidden" name="user_id" value="{{ user.id }}">
                     <input type="submit" value="Buy">
