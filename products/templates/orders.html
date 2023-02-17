@@ -1,1 +1,26 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <h1>Your orders</h1>
+    {% for order in orders %}
+        {% if order.user_id == user %}
+            {{ order.product_id }}
+            {{ order.description }}
+            {{ order.amount }}
+            {{ order.product_id.price }}
+            {{ order.created_at }}
+            <form action="{% url "orders" %}" method="post">
+            {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Return">
+                <input type="hidden" value="{{ order.pk }}" name="pk">
+            </form>
+            <br>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>Please sign in to view your orders</p>
+{% endif %}
+{% endblock %}
