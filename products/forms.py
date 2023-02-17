@@ -17,3 +17,9 @@ class ReturnPurchaseForm(forms.ModelForm):
     class Meta:
         model = ReturnPurchaseModel
         fields = []
+
+
+class CreateProductForm(forms.ModelForm):
+    class Meta:
+        model = ProductModel
+        fields = ("name", "description", "price", "quantity")

@@ -11,8 +11,8 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import ListView, UpdateView, FormView
 
-from products.forms import EditProductForm, ReturnPurchaseForm
-from products.models import ProductModel, PurchaseModel
+from products.forms import CreateProductForm, EditProductForm, ReturnPurchaseForm
+from products.models import ProductModel, PurchaseModel, ReturnPurchaseModel
 from users.models import UserModel
 
 
@@ -63,9 +63,24 @@ class PurchaseListView(ListView, FormView):
         purchase = PurchaseModel.objects.get(pk=self.request.POST["pk"])
         if purchase.purchased_at + timedelta(seconds=180) > timezone.now():
             messages.info(request=self.request, message="Your request has been accepted")
-            ReturnPurchase.objects.create(
+            ReturnPurchaseModel.objects.create(
                 product=purchase)
             return redirect("orders")
         else:
             messages.info(request=self.request, message="Return period ended")
             return redirect("orders")
+
+
+class CreateProductView(FormView):
+    model = ProductModel
+    form_class = CreateProductForm
+    template_name = "add.html"
+    fields = ["name", "price", "amount", "description"]
+    success_url = reverse_lazy("add")
+
+    def form_valid(self, form):
+        ProductModel.objects.create(name = self.request.POST["name"],
+                               description = self.request.POST["description"],
+                               price = self.request.POST["price"],
+                               quantity=self.request.POST["quantity"])
+        return super(CreateProductView, self).form_valid(form)
