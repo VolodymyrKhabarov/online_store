@@ -5,7 +5,8 @@ This module for processing user requests and returning responses.
 from datetime import timedelta
 from decimal import Decimal
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -84,3 +85,24 @@ class CreateProductView(FormView):
                                price = self.request.POST["price"],
                                quantity=self.request.POST["quantity"])
         return super(CreateProductView, self).form_valid(form)
+
+
+class RefundListView(PermissionRequiredMixin, ListView):
+    model = ReturnPurchaseModel
+    permission_required = "is_superuser"
+    context_object_name = "refunds"
+    ordering = "requested_at"
+    template_name = "refunds.html"
+
+    def post(self, request, *args, **kwargs):
+        refund_id = request.POST.get("refund_id", "")
+        refund = ReturnPurchaseModel.objects.get(pk=refund_id)
+
+        if "confirm" in request.POST:
+
+            refund.product.user_id.wallet = Decimal(refund.product.user_id.wallet) + refund.product.amount * refund.product.product_id.price
+            refund.product.user_id.save()
+            refund.product.product_id.quantity += refund.product.amount
+            refund.product.product_id.save()
+        refund.delete()
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
