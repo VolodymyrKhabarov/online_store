@@ -1,12 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-{% if user.is_staff %}
-    <form method="post">
+<form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit">Edit</input>
 </form>
-{% else %}
-        <div>You don't have permission</div>
-{% endif %}
 {% endblock %}

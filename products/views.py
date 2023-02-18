@@ -45,14 +45,15 @@ class ProductListView(ListView):
         return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
-class EditProductView(UpdateView):
+class EditProductView(PermissionRequiredMixin, UpdateView):
     model = ProductModel
+    permission_required = "is_superuser"
     form_class = EditProductForm
     template_name = "edit.html"
     success_url = reverse_lazy("list")
 
 
-class PurchaseListView(ListView, FormView):
+class PurchaseListView(LoginRequiredMixin, ListView, FormView):
     model = PurchaseModel
     template_name = "orders.html"
     context_object_name = "orders"
@@ -72,8 +73,9 @@ class PurchaseListView(ListView, FormView):
             return redirect("orders")
 
 
-class CreateProductView(FormView):
+class CreateProductView(PermissionRequiredMixin, FormView):
     model = ProductModel
+    permission_required = "is_superuser"
     form_class = CreateProductForm
     template_name = "add.html"
     fields = ["name", "price", "amount", "description"]

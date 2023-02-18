@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-{% if user.is_authenticated %}
+
     <h1>Your orders</h1>
     {% for order in orders %}
         {% if order.user_id == user %}
@@ -20,7 +20,5 @@
             <br>
         {% endif %}
     {% endfor %}
-{% else %}
-    <p>Please sign in to view your orders</p>
-{% endif %}
+
 {% endblock %}

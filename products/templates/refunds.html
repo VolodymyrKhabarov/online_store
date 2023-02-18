@@ -9,7 +9,7 @@
         <p><b>Request date:</b> {{ refund.requested_at }}</p>
             <form action="" method="post">
                 {% csrf_token %}
-                <input type='hidden' name='refund_id' value='{{ refund.id }}'>
+                <input type="hidden" name="refund_id" value="{{ refund.id }}">
                 <input type="submit" class="btn btn-success" value="Confirm" name="confirm">
                 <input type="submit" class="btn btn-danger" value="Reject" name="reject">
             </form>

@@ -2,13 +2,9 @@
 {% load static %}
 
 {% block content %}
-     {% if request.user.is_staff %}
-        <form action="{% url "add" %}" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Create">
-        </form>
-    {% else %}
-        <p>This page is for admin only</p>
-    {% endif %}
+<form action="{% url "add" %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Create">
+</form>
 {% endblock content %}

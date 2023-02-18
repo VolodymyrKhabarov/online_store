@@ -9,7 +9,7 @@
         {{ product.description|truncatewords:"10" }}
     {% if user.is_authenticated %}
         {% if user.is_staff%}
-            <p><a href="{% url 'edit_product' product.id %}" class="btn btn-warning">Edit</a></p>
+            <p><a href="{% url "edit_product" product.id %}" class="btn btn-warning">Edit</a></p>
         {% else %}
             <form method="post">
                 {% csrf_token %}
@@ -24,4 +24,3 @@
     <br>
     {% endfor %}
 {% endblock %}
-
