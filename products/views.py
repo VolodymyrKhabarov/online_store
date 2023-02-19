@@ -16,6 +16,12 @@ from products.forms import CreateProductForm, EditProductForm, ReturnPurchaseFor
 from products.models import ProductModel, PurchaseModel, ReturnPurchaseModel
 from users.models import UserModel
 
+# Define constants for error messages
+NOT_AVAILABLE_MSG = "Not available in this quantity"
+NOT_ENOUGH_MONEY_MSG = "Not enough money"
+REQUEST_ACCEPTED_MSG = "Your request has been accepted"
+RETURN_PERIOD_ENDED_MSG = "Return period ended"
+
 
 class ProductListView(ListView):
     model = ProductModel
@@ -34,9 +40,9 @@ class ProductListView(ListView):
         user.wallet = Decimal(user.wallet) - amount * Decimal(product.price)
 
         if product.quantity < 0:
-            messages.add_message(request, messages.ERROR, "Not available in this quantity")
+            messages.add_message(request, messages.ERROR, NOT_AVAILABLE_MSG)
         elif user.wallet < 0:
-            messages.add_message(request, messages.ERROR, "Not enough money")
+            messages.add_message(request, messages.ERROR, NOT_ENOUGH_MONEY_MSG)
         else:
             purchase = PurchaseModel(user_id=user, product_id=product, amount=amount)
             user.save()
@@ -71,11 +77,11 @@ class PurchaseListView(LoginRequiredMixin, ListView, FormView):
     def form_valid(self, form):
         purchase = PurchaseModel.objects.get(pk=self.request.POST["pk"])
         if purchase.purchased_at + timedelta(seconds=180) > timezone.now():
-            messages.info(request=self.request, message="Your request has been accepted")
+            messages.info(request=self.request, message=REQUEST_ACCEPTED_MSG)
             ReturnPurchaseModel.objects.create(product=purchase)
             return redirect("orders")
         else:
-            messages.info(request=self.request, message="Return period ended")
+            messages.info(request=self.request, message=RETURN_PERIOD_ENDED_MSG)
             return redirect("orders")
 
 
