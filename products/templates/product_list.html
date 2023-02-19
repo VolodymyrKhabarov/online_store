@@ -31,15 +31,14 @@
                             <td>
                                 {% if user.is_authenticated %}
                                     {% if user.is_staff %}
-                                        <p><a href="{% url "edit_product" product.id %}" class="btn btn-warning">Edit</a></p>
+                                        <p><a href="{% url "edit_product" product.pk %}" class="btn btn-warning">
+                                            Edit</a></p>
                                     {% else %}
                                         <form method="post">
                                             {% csrf_token %}
-                                            <label>Amount:</label>
-                                            <input type="number" name="amount" value="0" min="1" required>
-                                            <input type="hidden" name="product_id" value="{{ product.id }}">
-                                            <input type="hidden" name="user_id" value="{{ user.id }}">
-                                            <input type="submit" value="Buy">
+                                            {{ form.as_p }}
+                                            <input type="hidden" value="{{ product.pk }}" name="pk">
+                                            <input type="submit" value="Купить">
                                         </form>
                                     {% endif %}
                                 {% endif %}

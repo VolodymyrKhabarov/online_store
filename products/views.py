@@ -11,6 +11,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView, FormView
 
 from orders.models import PurchaseModel
+from orders.forms import PurchaseForm
 from products.forms import CreateProductForm, EditProductForm
 from products.models import ProductModel
 from users.models import UserModel
@@ -21,44 +22,39 @@ NOT_AVAILABLE_MSG = "Not available in this quantity"
 NOT_ENOUGH_MONEY_MSG = "Not enough money"
 
 
-class ProductListView(ListView):
+class ProductListView(ListView, FormView):
     """
-    A view for displaying a list of products and processing user purchases. This view is accessible for all users
-    including non-authenticated with some exceptions. Authenticated users only can see "buy" button and buy products.
-    Admin only can see "edit" button.
-
-    Methods:
-        post(request, *args, **kwargs): Handles user purchase requests submitted via a form. Updates the
-            quantity of the product, deducts the purchase amount from the user's wallet, creates a new purchase
-            record and returns a redirect to the previous page.
+    Class-based view for displaying a list of products and processing purchase forms.
     """
-
+    
     model = ProductModel
+    form_class = PurchaseForm
+    success_url = reverse_lazy("list")
     template_name = "product_list.html"
     context_object_name = "products"
 
-    def post(self, request, *args, **kwargs):
-        product_id = request.POST.get("product_id", "")
-        amount = int(request.POST.get("amount", ""))
-        user_id = int(request.POST.get("user_id", ""))
-
-        user = UserModel.objects.get(pk=user_id)
-        product = ProductModel.objects.get(pk=product_id)
-
-        product.quantity -= amount
-        user.wallet = Decimal(user.wallet) - amount * Decimal(product.price)
-
-        if product.quantity < 0:
-            messages.add_message(request, messages.ERROR, NOT_AVAILABLE_MSG)
-        elif user.wallet < 0:
-            messages.add_message(request, messages.ERROR, NOT_ENOUGH_MONEY_MSG)
+    def form_valid(self, form):
+        product = ProductModel.objects.get(pk=self.request.POST["pk"])
+        if int(self.request.POST.get("amount")) > product.quantity:
+            messages.add_message(self.request, messages.ERROR, NOT_AVAILABLE_MSG)
+            return redirect("list")
         else:
-            purchase = PurchaseModel(user_id=user, product_id=product, amount=amount)
-            user.save()
-            product.save()
-            purchase.save()
-
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+            amount = int(self.request.POST.get("amount"))
+            price = Decimal(str(product.price)) * amount
+            if self.request.user.wallet < price:
+                messages.error(request=self.request, message=NOT_ENOUGH_MONEY_MSG)
+                return redirect("list")
+            else:
+                self.request.user.wallet = Decimal(str(self.request.user.wallet)) - price
+                self.request.user.save()
+                product.quantity -= amount
+                product.save()
+                PurchaseModel.objects.create(
+                    user_id=self.request.user,
+                    product_id=product,
+                    amount=amount
+                )
+                return super(ProductListView, self).form_valid(form)
 
 
 class EditProductView(PermissionRequiredMixin, UpdateView):

@@ -4,7 +4,7 @@ This module for creation orders forms.
 
 from django import forms
 
-from orders.models import ReturnPurchaseModel
+from orders.models import ReturnPurchaseModel, PurchaseModel
 
 
 class ReturnPurchaseForm(forms.ModelForm):
@@ -17,3 +17,13 @@ class ReturnPurchaseForm(forms.ModelForm):
     class Meta:
         model = ReturnPurchaseModel
         fields = []
+
+
+class PurchaseForm(forms.ModelForm):
+    """
+    A form for purchasing a product.
+    """
+
+    class Meta:
+        model = PurchaseModel
+        fields = ["amount"]
