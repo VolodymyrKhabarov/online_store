@@ -1,18 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% for refund in refunds %}
-        <div>
-        <h3><b>Customer:</b> {{ refund.product.user_id }}</h3>
-        <p><b>Product:</b> {{ refund.product.product_id }}</p>
-        <p><b>Purchase date:</b> {{ refund.product.purchased_at}}</p>
-        <p><b>Request date:</b> {{ refund.requested_at }}</p>
-            <form action="" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="refund_id" value="{{ refund.id }}">
-                <input type="submit" class="btn btn-success" value="Confirm" name="confirm">
-                <input type="submit" class="btn btn-danger" value="Reject" name="reject">
-            </form>
-        </div>
-    {% endfor %}
+    <div class="container">
+        <h1>Refunds</h1>
+        {% if refunds %}
+            {% for refund in refunds %}
+                <div>
+                    <h3><b>Customer:</b> {{ refund.product.user_id }}</h3>
+                    <p><b>Product:</b> {{ refund.product.product_id }}</p>
+                    <p><b>Purchase date:</b> {{ refund.product.purchased_at }}</p>
+                    <p><b>Request date:</b> {{ refund.requested_at }}</p>
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="refund_id" value="{{ refund.id }}">
+                        <input type="submit" class="btn btn-success" value="Confirm" name="confirm">
+                        <input type="submit" class="btn btn-danger" value="Reject" name="reject">
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>There are no refunds</p>
+        {% endif %}
+    </div>
 {% endblock content %}

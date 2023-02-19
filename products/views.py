@@ -2,19 +2,19 @@
 This module for processing user requests and returning responses.
 """
 
-from datetime import timedelta
 from decimal import Decimal
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views.generic import ListView, UpdateView, FormView
 
+from orders.models import PurchaseModel
 from products.forms import CreateProductForm, EditProductForm
 from products.models import ProductModel
 from users.models import UserModel
+
 
 # Define constants for error messages
 NOT_AVAILABLE_MSG = "Not available in this quantity"
@@ -22,6 +22,17 @@ NOT_ENOUGH_MONEY_MSG = "Not enough money"
 
 
 class ProductListView(ListView):
+    """
+    A view for displaying a list of products and processing user purchases. This view is accessible for all users
+    including non-authenticated with some exceptions. Authenticated users only can see "buy" button and buy products.
+    Admin only can see "edit" button.
+
+    Methods:
+        post(request, *args, **kwargs): Handles user purchase requests submitted via a form. Updates the
+            quantity of the product, deducts the purchase amount from the user's wallet, creates a new purchase
+            record and returns a redirect to the previous page.
+    """
+
     model = ProductModel
     template_name = "product_list.html"
     context_object_name = "products"
@@ -51,6 +62,10 @@ class ProductListView(ListView):
 
 
 class EditProductView(PermissionRequiredMixin, UpdateView):
+    """
+    A view for editing a product. This view is accessible for admin role only.
+    """
+
     model = ProductModel
     permission_required = "is_superuser"
     form_class = EditProductForm
@@ -59,6 +74,10 @@ class EditProductView(PermissionRequiredMixin, UpdateView):
 
 
 class CreateProductView(PermissionRequiredMixin, FormView):
+    """
+    A view for creating new ProductModel objects by submitting a form. This view is accessible for admin role only.
+    """
+
     model = ProductModel
     permission_required = "is_superuser"
     form_class = CreateProductForm

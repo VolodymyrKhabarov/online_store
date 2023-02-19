@@ -7,14 +7,15 @@ from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import ListView, UpdateView, FormView
+from django.views.generic import ListView, FormView
 
 from orders.forms import ReturnPurchaseForm
 from orders.models import PurchaseModel, ReturnPurchaseModel
 from users.models import UserModel
+
 
 # Define constants for error messages
 REQUEST_ACCEPTED_MSG = "Your request has been accepted"
@@ -22,6 +23,10 @@ RETURN_PERIOD_ENDED_MSG = "Return period ended"
 
 
 class PurchaseListView(LoginRequiredMixin, ListView, FormView):
+    """
+    A view that displays a list of purchases made by users and provides an option to return products.
+    """
+
     model = PurchaseModel
     template_name = "orders.html"
     context_object_name = "orders"
@@ -47,6 +52,16 @@ class PurchaseListView(LoginRequiredMixin, ListView, FormView):
 
 
 class RefundListView(PermissionRequiredMixin, ListView):
+    """
+    A view for displaying a list of refunds of purchased products. Only users with the "is_superuser" permission are
+    allowed to access this view.
+
+    Methods:
+        post(self, request, *args, **kwargs): Handles the POST request to confirm a refund. Retrieves the refund to be
+        processed and updates the user's wallet and the product's quantity and saves the changes to the database.
+        If the request is not to confirm a refund, it deletes the refund from the database.
+    """
+
     model = ReturnPurchaseModel
     permission_required = "is_superuser"
     context_object_name = "refunds"

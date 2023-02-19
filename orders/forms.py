@@ -8,6 +8,12 @@ from orders.models import ReturnPurchaseModel
 
 
 class ReturnPurchaseForm(forms.ModelForm):
+    """
+    A form for creating a ReturnPurchaseModel object.
+
+    This form is based on the ReturnPurchaseModel model and is used to create a new object with empty fields.
+    """
+
     class Meta:
         model = ReturnPurchaseModel
         fields = []

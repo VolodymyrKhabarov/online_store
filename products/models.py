@@ -7,6 +7,10 @@ from django.conf import settings
 
 
 class ProductModel(models.Model):
+    """
+    A model class representing a product.
+    """
+
     name = models.CharField(max_length=60)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
