@@ -20,18 +20,22 @@ from users.models import UserModel
 # Define constants for error messages
 NOT_AVAILABLE_MSG = "Not available in this quantity"
 NOT_ENOUGH_MONEY_MSG = "Not enough money"
+INVALID_FORM_MSG = "Form is invalid. Please correct the errors."
 
 
-class ProductListView(ListView, FormView):
+class ProductListView(FormView):
     """
     Class-based view for displaying a list of products and processing purchase forms.
     """
-    
-    model = ProductModel
+
     form_class = PurchaseForm
     success_url = reverse_lazy("list")
     template_name = "product_list.html"
-    context_object_name = "products"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['products'] = ProductModel.objects.all()
+        return context
 
     def form_valid(self, form):
         product = ProductModel.objects.get(pk=self.request.POST["pk"])
@@ -55,6 +59,10 @@ class ProductListView(ListView, FormView):
                     amount=amount
                 )
                 return super(ProductListView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, INVALID_FORM_MSG)
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class EditProductView(PermissionRequiredMixin, UpdateView):

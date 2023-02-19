@@ -27,3 +27,9 @@ class PurchaseForm(forms.ModelForm):
     class Meta:
         model = PurchaseModel
         fields = ["amount"]
+
+    def clean_amount(self):
+        amount = self.cleaned_data.get('amount')
+        if amount == 0:
+            raise forms.ValidationError("Amount cannot be 0")
+        return amount
