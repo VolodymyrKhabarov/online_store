@@ -2,49 +2,54 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
+    <div class="container">
         <h1>Product list</h1>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    {% if user.is_authenticated %}
-                    {% if user.is_staff%}
-                        <th>Edit</th>
-                    {% else %}
-                        <th>Buy</th>
-                    {% endif %}
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in products %}
-                <tr>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.description }}</td>
-                    <td>{{ product.price }} uah</td>
-                    <td>{{ product.quantity }} kg</td>
-                    <td>{% if user.is_authenticated %}
-        {% if user.is_staff%}
-            <p><a href="{% url "edit_product" product.id %}" class="btn btn-warning">Edit</a></p>
+        {% if products %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        {% if user.is_authenticated %}
+                            {% if user.is_staff %}
+                                <th>Edit</th>
+                            {% else %}
+                                <th>Buy</th>
+                            {% endif %}
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.description }}</td>
+                            <td>{{ product.price }} uah</td>
+                            <td>{{ product.quantity }} kg</td>
+                            <td>
+                                {% if user.is_authenticated %}
+                                    {% if user.is_staff %}
+                                        <p><a href="{% url "edit_product" product.id %}" class="btn btn-warning">Edit</a></p>
+                                    {% else %}
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <label>Amount:</label>
+                                            <input type="number" name="amount" value="0" min="1" required>
+                                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                                            <input type="submit" value="Buy">
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         {% else %}
-            <form method="post">
-                {% csrf_token %}
-                    <label>Amount:</label>
-                    <input type="number" name="amount" value="0" min="1" required>
-                    <input type="hidden" name="product_id" value="{{ product.id }}">
-                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                    <input type="submit" value="Buy">
-            </form>
+            <p>Wait for adding products</p>
         {% endif %}
-    {% endif %}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
-
 {% endblock %}
