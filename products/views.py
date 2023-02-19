@@ -42,6 +42,7 @@ class ProductListView(ListView):
             user.save()
             product.save()
             purchase.save()
+
         return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 
@@ -61,12 +62,17 @@ class PurchaseListView(LoginRequiredMixin, ListView, FormView):
     form_class = ReturnPurchaseForm
     success_url = reverse_lazy("orders")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for order in context["orders"]:
+            order.total_price = order.amount * order.product_id.price
+        return context
+
     def form_valid(self, form):
         purchase = PurchaseModel.objects.get(pk=self.request.POST["pk"])
         if purchase.purchased_at + timedelta(seconds=180) > timezone.now():
             messages.info(request=self.request, message="Your request has been accepted")
-            ReturnPurchaseModel.objects.create(
-                product=purchase)
+            ReturnPurchaseModel.objects.create(product=purchase)
             return redirect("orders")
         else:
             messages.info(request=self.request, message="Return period ended")
@@ -82,10 +88,12 @@ class CreateProductView(PermissionRequiredMixin, FormView):
     success_url = reverse_lazy("add")
 
     def form_valid(self, form):
-        ProductModel.objects.create(name = self.request.POST["name"],
-                               description = self.request.POST["description"],
-                               price = self.request.POST["price"],
-                               quantity=self.request.POST["quantity"])
+        ProductModel.objects.create(
+            name=self.request.POST["name"],
+            description=self.request.POST["description"],
+            price=self.request.POST["price"],
+            quantity=self.request.POST["quantity"]
+        )
         return super(CreateProductView, self).form_valid(form)
 
 
