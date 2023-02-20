@@ -19,7 +19,8 @@ from users.models import UserModel
 
 # Define constants for error messages
 REQUEST_ACCEPTED_MSG = "Your request has been accepted"
-RETURN_PERIOD_ENDED_MSG = "Return period ended"
+RETURN_PERIOD_ENDED_MSG = "The return period for this purchase has ended"
+REJECT_RE_RETURN_MSG = "You have already requested a return for this purchase"
 
 
 class PurchaseListView(LoginRequiredMixin, ListView, FormView):
@@ -42,13 +43,16 @@ class PurchaseListView(LoginRequiredMixin, ListView, FormView):
 
     def form_valid(self, form):
         purchase = PurchaseModel.objects.get(pk=self.request.POST["pk"])
-        if purchase.purchased_at + timedelta(seconds=180) > timezone.now():
-            messages.info(request=self.request, message=REQUEST_ACCEPTED_MSG)
-            ReturnPurchaseModel.objects.create(product=purchase)
-            return redirect("orders")
-        else:
-            messages.info(request=self.request, message=RETURN_PERIOD_ENDED_MSG)
-            return redirect("orders")
+        try:
+            ReturnPurchaseModel.objects.get(product=purchase)
+            messages.info(request=self.request, message=REJECT_RE_RETURN_MSG)
+        except ReturnPurchaseModel.DoesNotExist:
+            if purchase.purchased_at + timedelta(seconds=180) > timezone.now():
+                messages.info(request=self.request, message=REQUEST_ACCEPTED_MSG)
+                ReturnPurchaseModel.objects.create(product=purchase)
+            else:
+                messages.info(request=self.request, message=RETURN_PERIOD_ENDED_MSG)
+        return redirect("orders")
 
 
 class RefundListView(PermissionRequiredMixin, ListView):
