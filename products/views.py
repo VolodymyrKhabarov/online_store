@@ -5,7 +5,7 @@ This module for processing user requests and returning responses.
 from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
+from django.http import HttpResponseRedirect, HttpRequest, HttpResponse, HttpResponseNotFound
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView, FormView
@@ -40,7 +40,7 @@ class ProductListView(FormView):
     def form_valid(self, form):
         try:
             product = get_object_or_404(ProductModel, pk=self.request.POST["pk"])
-        except Http404:
+        except HttpResonseNotFound:
             messages.error(self.request, PRODUCT_NOT_FOUND_MSG)
             return redirect("list")
 
