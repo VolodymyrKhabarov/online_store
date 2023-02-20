@@ -40,13 +40,13 @@ class ProductListView(FormView):
     def form_valid(self, form):
         product = ProductModel.objects.get(pk=self.request.POST["pk"])
         if int(self.request.POST.get("amount")) > product.quantity:
-            messages.add_message(self.request, messages.ERROR, NOT_AVAILABLE_MSG)
+            messages.error(self.request, NOT_AVAILABLE_MSG)
             return redirect("list")
         else:
             amount = int(self.request.POST.get("amount"))
             price = Decimal(str(product.price)) * amount
             if self.request.user.wallet < price:
-                messages.error(request=self.request, message=NOT_ENOUGH_MONEY_MSG)
+                messages.error(self.request, NOT_ENOUGH_MONEY_MSG)
                 return redirect("list")
             else:
                 self.request.user.wallet = Decimal(str(self.request.user.wallet)) - price

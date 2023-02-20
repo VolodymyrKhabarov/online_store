@@ -47,12 +47,12 @@ class PurchaseListView(LoginRequiredMixin, ListView, FormView):
     def form_valid(self, form):
         purchase = PurchaseModel.objects.get(pk=self.request.POST["pk"])
         try:
-            ReturnPurchaseModel.objects.get(product=purchase)
+            existing_return = ReturnPurchaseModel.objects.get(product=purchase)
             messages.info(self.request, REJECT_RE_RETURN_MSG)
         except ReturnPurchaseModel.DoesNotExist:
             if purchase.purchased_at + timedelta(seconds=180) > timezone.now():
-                messages.info(self.request, REQUEST_ACCEPTED_MSG)
                 ReturnPurchaseModel.objects.create(product=purchase)
+                messages.info(self.request, REQUEST_ACCEPTED_MSG)
             else:
                 messages.info(self.request, RETURN_PERIOD_ENDED_MSG)
         return redirect("orders")
