@@ -3,7 +3,6 @@ Module for defining and describing products models.
 """
 
 from django.db import models
-from django.conf import settings
 
 
 class ProductModel(models.Model):
@@ -17,9 +16,12 @@ class ProductModel(models.Model):
     quantity = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.price})"
 
     class Meta:
+        """
+        Class Meta is used to specify metadata.
+        """
         db_table = "Product"
         ordering = ["name"]
         verbose_name = "Product"

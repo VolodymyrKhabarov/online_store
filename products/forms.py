@@ -15,6 +15,10 @@ class CreateProductForm(forms.ModelForm):
     """
 
     class Meta:
+        """
+        Class Meta is used to specify metadata.
+        """
+
         model = ProductModel
         fields = ("name", "description", "price", "quantity")
 
@@ -23,10 +27,14 @@ class EditProductForm(forms.ModelForm):
     """
     A form for editing product details.
 
-    The form that extends Django's ModelForm and allows editing of product details such as name, description,
-    price, and quantity.
+    The form that extends Django's ModelForm and allows editing of product details such as name,
+    description, price, and quantity.
     """
 
     class Meta:
+        """
+        Class Meta is used to specify metadata.
+        """
+
         model = ProductModel
         fields = ("name", "description", "price", "quantity")

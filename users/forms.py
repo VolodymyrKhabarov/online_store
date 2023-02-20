@@ -16,5 +16,8 @@ class SignUpForm(UserCreationForm):
     """
 
     class Meta:
+        """
+        Class Meta is used to specify metadata.
+        """
         model = UserModel
         fields = ["username", "email", "password1", "password2"]

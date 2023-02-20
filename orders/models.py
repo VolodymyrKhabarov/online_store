@@ -13,7 +13,8 @@ class PurchaseModel(models.Model):
     A model representing a purchase made by a user.
 
     Each instance of this model represents a single purchase of a product by a user.
-    It stores the user's ID and the ID of the purchased product, along with the quantity and purchase date/time.
+    It stores the user's ID and the ID of the purchased product, along with
+    the quantity and purchase date/time.
     """
 
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -22,9 +23,13 @@ class PurchaseModel(models.Model):
     purchased_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.product)
+        return str(self.product_id)
 
     class Meta:
+        """
+        Class Meta is used to specify metadata.
+        """
+
         db_table = "Purchase"
         verbose_name = "Purchase"
         verbose_name_plural = "Purchases"
@@ -42,6 +47,10 @@ class ReturnPurchaseModel(models.Model):
         return str(self.product)
 
     class Meta:
+        """
+        Class Meta is used to specify metadata.
+        """
+
         db_table = "Return"
         verbose_name = "Purchase return"
         verbose_name_plural = "Purchases return"
