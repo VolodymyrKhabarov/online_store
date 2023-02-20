@@ -37,21 +37,24 @@ class PurchaseListView(LoginRequiredMixin, ListView, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        for order in context["orders"]:
-            order.total_price = order.amount * order.product_id.price
+        orders = context.get("orders")
+        if orders is not None:
+            for order in orders:
+                order.total_price = order.amount * order.product_id.price
+        context["orders"] = orders
         return context
 
     def form_valid(self, form):
         purchase = PurchaseModel.objects.get(pk=self.request.POST["pk"])
         try:
             ReturnPurchaseModel.objects.get(product=purchase)
-            messages.info(request=self.request, message=REJECT_RE_RETURN_MSG)
+            messages.info(self.request, REJECT_RE_RETURN_MSG)
         except ReturnPurchaseModel.DoesNotExist:
             if purchase.purchased_at + timedelta(seconds=180) > timezone.now():
-                messages.info(request=self.request, message=REQUEST_ACCEPTED_MSG)
+                messages.info(self.request, REQUEST_ACCEPTED_MSG)
                 ReturnPurchaseModel.objects.create(product=purchase)
             else:
-                messages.info(request=self.request, message=RETURN_PERIOD_ENDED_MSG)
+                messages.info(self.request, RETURN_PERIOD_ENDED_MSG)
         return redirect("orders")
 
 
