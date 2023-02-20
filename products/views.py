@@ -18,9 +18,10 @@ from users.models import UserModel
 
 
 # Define constants for error messages
+INVALID_FORM_MSG = "Form is invalid. Please correct the errors."
 NOT_AVAILABLE_MSG = "Not available in this quantity"
 NOT_ENOUGH_MONEY_MSG = "Not enough money"
-INVALID_FORM_MSG = "Form is invalid. Please correct the errors."
+SUCCESS_PURCHASE_MSG = "Your purchase was successful"
 
 
 class ProductListView(FormView):
@@ -63,6 +64,7 @@ class ProductListView(FormView):
                     product_id=product,
                     amount=amount
                 )
+                messages.success(self.request, SUCCESS_PURCHASE_MSG)
                 return super(ProductListView, self).form_valid(form)
 
     def form_invalid(self, form):

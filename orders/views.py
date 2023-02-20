@@ -18,9 +18,12 @@ from users.models import UserModel
 
 
 # Define constants for error messages
+PURCHASE_DOES_NOT_EXIST_MSG = "The purchase you are trying to return does not exist"
 REQUEST_ACCEPTED_MSG = "Your request has been accepted"
 RETURN_PERIOD_ENDED_MSG = "The return period for this purchase has ended"
 REJECT_RE_RETURN_MSG = "You have already requested a return for this purchase"
+SUCCESS_RETURN_MSG = "Request for product return has been successfully processed"
+SUCCESS_REJECT_MSG = "Request for product return has been successfully rejected"
 
 
 class PurchaseListView(LoginRequiredMixin, ListView, FormView):
@@ -48,7 +51,7 @@ class PurchaseListView(LoginRequiredMixin, ListView, FormView):
         try:
             purchase = PurchaseModel.objects.get(pk=self.request.POST["pk"])
         except PurchaseModel.DoesNotExist:
-            messages.error(self.request, "The purchase you are trying to return does not exist.")
+            messages.error(self.request, PURCHASE_DOES_NOT_EXIST_MSG)
             return redirect("orders")
 
         try:
@@ -97,5 +100,8 @@ class RefundListView(PermissionRequiredMixin, ListView):
             refund.product.user_id.save()
             refund.product.product_id.quantity += refund.product.amount
             refund.product.product_id.save()
+            messages.success(request, SUCCESS_RETURN_MSG)
+        else:
+            messages.success(request, SUCCESS_REJECT_MSG)
         refund.delete()
         return redirect("refunds")
