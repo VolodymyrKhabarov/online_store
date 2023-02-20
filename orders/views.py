@@ -7,7 +7,7 @@ from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import ListView, FormView
@@ -77,10 +77,9 @@ class RefundListView(PermissionRequiredMixin, ListView):
 
     def post(self, request, *args, **kwargs):
         refund_id = request.POST.get("refund_id", "")
-        refund = ReturnPurchaseModel.objects.get(pk=refund_id)
+        refund = get_object_or_404(ReturnPurchaseModel, pk=refund_id)
 
         if "confirm" in request.POST:
-
             refund.product.user_id.wallet = Decimal(refund.product.user_id.wallet) + refund.product.amount * \
                                             refund.product.product_id.price
             refund.product.user_id.save()
