@@ -17,7 +17,7 @@ from orders.models import PurchaseModel, ReturnPurchaseModel
 from users.models import UserModel
 
 
-# Define constants for error messages
+# Define constants for messages
 PURCHASE_DOES_NOT_EXIST_MSG = "The purchase you are trying to return does not exist"
 REQUEST_ACCEPTED_MSG = "Your request has been accepted"
 RETURN_PERIOD_ENDED_MSG = "The return period for this purchase has ended"

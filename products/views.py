@@ -17,10 +17,12 @@ from products.models import ProductModel
 from users.models import UserModel
 
 
-# Define constants for error messages
+# Define constants for messages
 INVALID_FORM_MSG = "Form is invalid. Please correct the errors."
 NOT_AVAILABLE_MSG = "Not available in this quantity"
 NOT_ENOUGH_MONEY_MSG = "Not enough money"
+SUCCESS_CREATE_MSG = "Product created successfully"
+SUCCESS_EDIT_MSG = "Product has been updated successfully"
 SUCCESS_PURCHASE_MSG = "Your purchase was successful"
 
 
@@ -83,6 +85,10 @@ class EditProductView(PermissionRequiredMixin, UpdateView):
     template_name = "edit.html"
     success_url = reverse_lazy("list")
 
+    def form_valid(self, form):
+        messages.success(self.request, SUCCESS_EDIT_MSG)
+        return super().form_valid(form)
+
 
 class CreateProductView(PermissionRequiredMixin, FormView):
     """
@@ -103,4 +109,5 @@ class CreateProductView(PermissionRequiredMixin, FormView):
             price=self.request.POST["price"],
             quantity=self.request.POST["quantity"]
         )
+        messages.success(self.request, SUCCESS_CREATE_MSG)
         return super(CreateProductView, self).form_valid(form)
