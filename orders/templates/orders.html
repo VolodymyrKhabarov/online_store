@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <h1>Your orders</h1>
+        {% if orders %}
+            {% for order in orders %}
+                {% if order.user_id == user %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Order number</th>
+                                <th>Total price</th>
+                                <th>Purchase date</th>
+                                <th>Return</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ order.product_id }}</td>
+                                <td>{{ order.pk }}</td>
+                                <td>{{ order.total_price }}</td>
+                                <td>{{ order.purchased_at }}</td>
+                                <td>
+                                    <form action="{% url "orders" %}" method="post">
+                                        {% csrf_token %}
+                                        {{ form.as_p }}
+                                        <input type="submit" value="Return">
+                                        <input type="hidden" value="{{ order.pk }}" name="pk">
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p>You have placed no orders</p>
+        {% endif %}
+    </div>
+{% endblock %}

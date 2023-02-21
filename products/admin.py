@@ -1,3 +1,12 @@
+"""
+Module for registration products models
+"""
+
 from django.contrib import admin
 
-# Register your models here.
+from products.models import ProductModel
+
+
+@admin.register(ProductModel)
+class ProductModelAdmin(admin.ModelAdmin):
+    pass

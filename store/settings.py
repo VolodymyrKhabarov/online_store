@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'orders',
     'products',
     'users',
 ]
@@ -102,6 +103,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Authentication
+AUTH_USER_MODEL = "users.UserModel"
+
+# Login
+LOGIN_URL = "login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

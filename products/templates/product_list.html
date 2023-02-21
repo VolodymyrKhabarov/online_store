@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <h1>Product list</h1>
+        {% if products %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        {% if user.is_authenticated %}
+                            {% if user.is_staff %}
+                                <th>Edit</th>
+                            {% else %}
+                                <th>Buy</th>
+                            {% endif %}
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.description }}</td>
+                            <td>{{ product.price }} uah</td>
+                            <td>{{ product.quantity }} kg</td>
+                            <td>
+                                {% if user.is_authenticated %}
+                                    {% if user.is_staff %}
+                                        <p><a href="{% url "edit_product" product.pk %}" class="btn btn-warning">
+                                            Edit</a></p>
+                                    {% else %}
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            {{ form.as_p }}
+                                            <input type="hidden" value="{{ product.pk }}" name="pk">
+                                            <input type="submit" value="Buy">
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Wait for adding products</p>
+        {% endif %}
+    </div>
+{% endblock %}
