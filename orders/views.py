@@ -104,8 +104,10 @@ class RefundListView(PermissionRequiredMixin, ListView):
             refund.product.user_id.save()
             refund.product.product_id.quantity += refund.product.amount
             refund.product.product_id.save()
+            refund.product.delete()
             messages.success(request, SUCCESS_RETURN_MSG)
         else:
             messages.success(request, SUCCESS_REJECT_MSG)
         refund.delete()
         return redirect("refunds")
+
